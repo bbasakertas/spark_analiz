@@ -1,0 +1,111 @@
+from pyspark.sql import SparkSession
+
+CONNECTOR_TYPE = "com.microsoft.sqlserver.jdbc.spark"
+SQL_USERNAME = "sa"
+SQL_PASSWORD = "basak9807.."
+SQL_DBNAME = "ProjeETicaretDB"
+SQL_SERVERNAME = "LAPTOP-2E8T0VKM"
+
+table_Products = "dbo.Products" #Products tablosu
+table_Categories = "dbo.Categories" #Categories tablosu
+table_Members = "dbo.Members" #Members tablosu
+table_Orders = "dbo.Orders" #Orders tablosu
+table_MessageReplies = "dbo.MessageReplies" #MessageReplies tablosu
+
+if __name__ == "__main__" :
+
+    spark = SparkSession.builder \
+        .appName("Apache Spark veri analizi") \
+        .getOrCreate()
+   
+    url = "jdbc:sqlserver://192.168.0.21:1433;instanceName=MSSQLSERVER;databaseName=ProjeETicaretDB;"
+    
+    print("****************************** PRODUCTS tablosu başlangıcı ******************************")
+
+    #Products tablosu tanımlamaları
+    df_Pro = spark.read \
+        .format("jdbc") \
+        .option("url", url) \
+        .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+        .option("dbtable", table_Products) \
+        .option("user", SQL_USERNAME) \
+        .option("password", SQL_PASSWORD) \
+        .load()
+
+    df_Pro.show(2) #tablodan 2 veri gösterme
+    df_Pro.select("Name", "Price").show(4) #tablodan name, price sütunlarını seçerek 4 veri gösterme
+    df_Pro.select("Name", "UnitsInstock").sort("UnitsInStock").show(5) #tablodan name, unitsınstock sütunlarını seçerek unitsınstock'un sıralanmış halinden 5 veri gösterme
+    df_Pro.select("Name", "Price", "UnitsInStock").filter(df_Pro["Price"] > 40).show(4) #tablodan name, price, unitsınstock sütunlarını seçerek price'ın 40'tan büyük olan değerlerinden 4 veri gösterme
+   
+    print("***************************************** PRODUCTS tablosu bitti ****************************************")
+    print("\n")
+    print("*************************************** CATEGORİES tablosu başlangıcı ***************************************")
+
+   #Categories tablosu tanımlamaları
+    df_Cat = spark.read \
+        .format("jdbc") \
+        .option("url", url) \
+        .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+        .option("dbtable", table_Categories) \
+        .option("user", SQL_USERNAME) \
+        .option("password", SQL_PASSWORD) \
+        .load()
+
+    df_Cat.show(2) #tablodan 2 veri gösterme
+    df_Cat.select("Name", "Parent_Id").show(5) #tablodan name, parent_id sütunlarını seçerek 5 veri gösterme
+    df_Cat.sort("Id").show(7) #tablodan id sütunun sıralamasından 7 veri gösterme
+
+    print("*************************************** CATEGORİES tablosu bitişi **************************************")
+    print("\n")
+    print("**************************************** MEMBERS tablosu başlangıcı ************************************")
+
+    #Members tablosy tanımlamaları
+    df_Members = spark.read \
+        .format("jdbc") \
+        .option("url", url) \
+        .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+        .option("dbtable", table_Members) \
+        .option("user", SQL_USERNAME) \
+        .option("password", SQL_PASSWORD) \
+        .load()
+   
+    df_Members.show(5) #tablodan 5 veri gösterme
+    df_Members.select("Name", "Surname", "Email", "Password").show(2) #tablodan name, surname, email, password sütunlarını seçerek 2 veri gösterme
+
+    print("*************************************** MEMBERS tablosu bitişi ***************************************")
+    print("\n")
+    print("************************************** ORDERS tablosu başlangıcı **************************************")
+
+    #Orders tablosu tanımlamaları
+    df_Orders = spark.read \
+        .format("jdbc") \
+        .option("url", url) \
+        .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+        .option("dbtable", table_Orders) \
+        .option("user", SQL_USERNAME) \
+        .option("password", SQL_PASSWORD) \
+        .load()
+
+    df_Orders.show(4) #tablodan 4 veri gösterme
+    df_Orders.select("Member_Id", "Address").show(6) #tablodan member_id ve adres sütunlarını seçerek 6 veri gösterme
+
+    print("*************************************** ORDERS tablosu bitişi ***************************************")
+    print("\n")
+    print("*********************************** MESSAGEREPLIES tablosu başlangıcı **********************************")
+
+    df_MesRep = spark.read \
+        .format("jdbc") \
+        .option("url", url) \
+        .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+        .option("dbtable", table_MessageReplies) \
+        .option("user", SQL_USERNAME) \
+        .option("password", SQL_PASSWORD) \
+        .load()
+
+    df_MesRep.show(2) #tablodan 2 veri gösterme
+    df_MesRep.select("Text").show(3) #tablodan text sütununu seçerek 2 veri gösterme
+
+    print("*********************************** MESSAGEREPLIES tablosu bitişi ***********************************")
+
+    
+    
